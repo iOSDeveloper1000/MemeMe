@@ -45,6 +45,12 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Grant access to the camera to use a new photo for MemeMe.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Grant access to photo library to use a photo from your library for MemMe.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Grant access to the photo album if you want to save it there.</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
