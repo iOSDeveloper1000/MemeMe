@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import AVFoundation
+
 
 class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
 
@@ -50,6 +52,17 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         self.subscribeToKeyboardNotifications()
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        // Adapt the text fields in case the device is rotated
+        coordinator.animate(alongsideTransition: nil) { _ in
+            if let image = self.imageView.image {
+                self.alignTextFieldInImage(image)
+            }
+        }
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -91,8 +104,7 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             self.imageView.image = image
-            
-            //self.alignTextFields(imageSize: image.size, imageScale: image.scale)
+            self.alignTextFieldInImage(image)
         } else {
             print("image is nil")
         }
@@ -129,10 +141,19 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         textfield.textAlignment = .center
     }
     
-    func alignTextFields(imageSize: CGSize, imageScale: CGFloat) {
-        let textfield = topTextField!
-        let leadingConstraint: NSLayoutConstraint = NSLayoutConstraint(item: textfield, attribute: .leading, relatedBy: .equal, toItem: imageView, attribute: .centerX, multiplier: 1.0, constant: 10.0 - imageSize.width/imageScale)
-        leadingConstraint.isActive = true
+    func alignTextFieldInImage(_ myImage: UIImage) {
+        
+        // Get the outline of the current image rectangular
+        let imageRectangular = AVMakeRect(aspectRatio: myImage.size, insideRect: self.imageView.bounds)
+        
+        // Adapt top and bottom textfield for the size of the chosen image
+        for constraint in self.view.constraints {
+            if constraint.identifier == "horizontalTextFieldConstraint" {
+                constraint.constant = 10.0 + 0.5 * (self.imageView.frame.size.width - imageRectangular.width)
+            } else if constraint.identifier == "verticalTextFieldConstraint" {
+                constraint.constant = 15.0 + 0.5 * (self.imageView.frame.size.height - imageRectangular.height)
+            }
+        }
     }
     
     
