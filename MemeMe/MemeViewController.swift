@@ -53,9 +53,6 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         self.cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
         self.shareButton.isEnabled = false
         
-        self.topTextField.delegate = self
-        self.bottomTextField.delegate = self
-        
         self.subscribeToKeyboardNotifications()
     }
     
@@ -102,13 +99,6 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         }
         
         self.present(activityController, animated: true, completion: nil)
-    }
-    
-    @IBAction func cancelMeme(_ sender: Any) {
-        
-        // @todo !!!
-        
-        print("cancelMeme called")
     }
     
     
@@ -163,6 +153,7 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         textfield.text = defaultText
         textfield.defaultTextAttributes = memeTextAttributes
         textfield.textAlignment = .center
+        textfield.delegate = self
     }
     
     func alignTextFieldInImage(_ myImage: UIImage) {
@@ -200,7 +191,7 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     func save() {
         
         // Create the meme
-        let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: self.imageView.image!, memedImage: self.memedImage!)
+        _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: self.imageView.image!, memedImage: self.memedImage!)
     }
     
     func hideToolbarAndNavBar(_ hidden: Bool) {

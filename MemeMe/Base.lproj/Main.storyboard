@@ -52,11 +52,7 @@
                                                 <action selector="shareMeme:" destination="BYZ-38-t0r" id="nV8-oN-tcm"/>
                                             </connections>
                                         </barButtonItem>
-                                        <barButtonItem key="rightBarButtonItem" title="Cancel" id="C59-SU-11Q">
-                                            <connections>
-                                                <action selector="cancelMeme:" destination="BYZ-38-t0r" id="io7-i5-RhK"/>
-                                            </connections>
-                                        </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" title="Cancel" id="C59-SU-11Q"/>
                                     </navigationItem>
                                 </items>
                             </navigationBar>
