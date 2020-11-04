@@ -29,12 +29,12 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="FI5-Ec-27q"/>
                                     <barButtonItem image="camera" catalog="system" id="ROk-3R-lFL">
                                         <connections>
-                                            <action selector="takeAPhoto:" destination="BYZ-38-t0r" id="EKr-Eg-Vl3"/>
+                                            <action selector="pickAnImageByCamera:" destination="BYZ-38-t0r" id="EKr-Eg-Vl3"/>
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem title="Album" id="cNc-ZC-wHS">
                                         <connections>
-                                            <action selector="pickanImage:" destination="BYZ-38-t0r" id="72B-H7-sbm"/>
+                                            <action selector="pickanImageFromAlbum:" destination="BYZ-38-t0r" id="72B-H7-sbm"/>
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Lm2-GG-cm2"/>
@@ -102,6 +102,9 @@
                         <outlet property="bottomTextField" destination="u4K-xv-pSr" id="Bbe-XO-aP5"/>
                         <outlet property="cameraButton" destination="ROk-3R-lFL" id="RX6-JM-s4c"/>
                         <outlet property="imageView" destination="Xmk-PP-J77" id="fR8-lW-9hy"/>
+                        <outlet property="navigationBar" destination="1Dl-6X-V3R" id="tfv-KS-ZLH"/>
+                        <outlet property="shareButton" destination="IgW-xa-KuY" id="xpD-eh-yBg"/>
+                        <outlet property="toolBar" destination="luo-Mi-v3i" id="1cG-fV-7mS"/>
                         <outlet property="topTextField" destination="sHU-oI-W1D" id="qVf-dW-5Q1"/>
                     </connections>
                 </viewController>

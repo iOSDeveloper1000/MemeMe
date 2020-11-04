@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  MemeViewController.swift
 //  MemeMe
 //
 //  Created by Arno Seidel on 03.11.20.
@@ -9,14 +9,18 @@ import UIKit
 import AVFoundation
 
 
+// MARK: Class MemeViewController
+
 class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
 
     // MARK: Outlets
     
-    //@IBOutlet weak var navBarItem: UINavigationItem!
-    
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
+    @IBOutlet weak var shareButton: UIBarButtonItem!
+    
+    @IBOutlet weak var navigationBar: UINavigationBar!
+    @IBOutlet weak var toolBar: UIToolbar!
     
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
@@ -30,6 +34,8 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
         NSAttributedString.Key.strokeWidth: -6.0
     ]
+    
+    var memedImage: UIImage!
     
     
     // MARK: Life Cycle
@@ -45,6 +51,7 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         super.viewWillAppear(animated)
         
         self.cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
+        self.shareButton.isEnabled = false
         
         self.topTextField.delegate = self
         self.bottomTextField.delegate = self
@@ -72,22 +79,29 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     // MARK: Actions
     
-    @IBAction func pickanImage(_ sender: Any) {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = .photoLibrary
-        self.present(imagePicker, animated: true, completion: nil)
+    @IBAction func pickanImageFromAlbum(_ sender: Any) {
+        self.pickAnImage(sourceType: .photoLibrary)
     }
     
-    @IBAction func takeAPhoto(_ sender: Any) {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = .camera
-        self.present(imagePicker, animated: true, completion: nil)
+    @IBAction func pickAnImageByCamera(_ sender: Any) {
+        self.pickAnImage(sourceType: .camera)
     }
     
     @IBAction func shareMeme(_ sender: Any) {
-        print("shareMeme called")
+        
+        self.memedImage = self.generateMemedImage()
+        
+        let activityController = UIActivityViewController(activityItems: [self.memedImage!], applicationActivities: nil)
+        
+        activityController.completionWithItemsHandler = { (activityType, completed, returnedItems, error) in
+            if !completed {
+                return
+            }
+            
+            self.save()
+        }
+        
+        self.present(activityController, animated: true, completion: nil)
     }
     
     @IBAction func cancelMeme(_ sender: Any) {
@@ -105,6 +119,9 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             self.imageView.image = image
             self.alignTextFieldInImage(image)
+            
+            // Enable Share button
+            self.shareButton.isEnabled = true
         } else {
             print("image is nil")
         }
@@ -135,6 +152,13 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     // MARK: Helper methods
     
+    func pickAnImage(sourceType: UIImagePickerController.SourceType) {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = sourceType
+        self.present(imagePicker, animated: true, completion: nil)
+    }
+    
     func setTextFieldProperties(_ textfield: UITextField, defaultText: String = "") {
         textfield.text = defaultText
         textfield.defaultTextAttributes = memeTextAttributes
@@ -154,6 +178,34 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
                 constraint.constant = 15.0 + 0.5 * (self.imageView.frame.size.height - imageRectangular.height)
             }
         }
+    }
+    
+    func generateMemedImage() -> UIImage {
+        
+        // Hide toolbar and navigationbar in meme
+        self.hideToolbarAndNavBar(true)
+        
+        // Render view to an image
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        self.view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
+        let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        
+        // Present toolbar and navigationbar again
+        self.hideToolbarAndNavBar(false)
+        
+        return memedImage
+    }
+    
+    func save() {
+        
+        // Create the meme
+        let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: self.imageView.image!, memedImage: self.memedImage!)
+    }
+    
+    func hideToolbarAndNavBar(_ hidden: Bool) {
+        self.navigationBar.isHidden = hidden
+        self.toolBar.isHidden = hidden
     }
     
     
