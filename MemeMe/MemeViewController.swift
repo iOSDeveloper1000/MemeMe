@@ -9,6 +9,12 @@ import UIKit
 import AVFoundation
 
 
+// MARK: Static elements
+
+let defaultTextTop: String = "Enter top text here"
+let defaultTextBottom: String = "Enter bottom text here"
+
+
 // MARK: Class MemeViewController
 
 class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
@@ -43,8 +49,8 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.setTextFieldProperties(topTextField, defaultText: "TOP TEXTFIELD")
-        self.setTextFieldProperties(bottomTextField, defaultText: "BOTTOM TEXTFIELD")
+        self.setTextFieldProperties(topTextField, defaultText: defaultTextTop)
+        self.setTextFieldProperties(bottomTextField, defaultText: defaultTextBottom)
     }
     
     override func viewWillAppear(_ animated: Bool) {
