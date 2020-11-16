@@ -27,8 +27,4 @@ struct Meme {
         self.memed = memedImage
     }
     
-    func getMeme() -> UIImage {
-        return memed
-    }
-    
 }

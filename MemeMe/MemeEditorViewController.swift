@@ -15,9 +15,9 @@ let defaultTextTop: String = "Enter top text here"
 let defaultTextBottom: String = "Enter bottom text here"
 
 
-// MARK: Class MemeViewController
+// MARK: Class MemeEditorViewController
 
-class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
+class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
 
     // MARK: Outlets
     
@@ -32,7 +32,7 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     @IBOutlet weak var bottomTextField: UITextField!
     
     
-    // MARK: Property variables
+    // MARK: Properties
     
     let memeTextAttributes: [NSAttributedString.Key: Any] = [
         NSAttributedString.Key.strokeColor: UIColor.black,
@@ -42,6 +42,9 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     ]
     
     var memedImage: UIImage!
+    
+    // Set by instantiating view controller such that table / collection can be reloaded
+    var completionHandle: () -> Void = {}
     
     
     // MARK: Life Cycle
@@ -102,9 +105,14 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
             }
             
             self.save()
+            self.completionHandle()
         }
         
         self.present(activityController, animated: true, completion: nil)
+    }
+    
+    @IBAction func cancelEditor(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     
@@ -194,10 +202,15 @@ class MemeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         return memedImage
     }
     
+    // Create a meme object and save it to the memes array in the app delegate
     func save() {
         
-        // Create the meme
-        _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: self.imageView.image!, memedImage: self.memedImage!)
+        // Update the meme
+        let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: self.imageView.image!, memedImage: self.memedImage!)
+        
+        // Add it to the memes array in app delegate
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.memes.append(meme)
     }
     
     func hideToolbarAndNavBar(_ hidden: Bool) {
