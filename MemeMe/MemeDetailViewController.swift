@@ -15,26 +15,23 @@ class MemeDetailViewController: UIViewController {
     
     // MARK: Properties
     
-    var memeImage: UIImage!
-    var detailString: String!
+    var meme: Meme!
     
     
     // MARK: Outlets
     
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var details: UILabel!
     
     
     // MARK: Life cycle methods
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if let memeImage = self.memeImage {
-            self.imageView.image = memeImage
+        if let meme = self.meme {
+            self.imageView.image = meme.memed
+            self.details.text = meme.topText + " ... " + meme.bottomText
         }
     }
     

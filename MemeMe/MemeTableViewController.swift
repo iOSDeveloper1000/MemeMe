@@ -60,13 +60,12 @@ class MemeTableViewController: UIViewController, UITableViewDelegate, UITableVie
     // MARK: UITableViewDelegate & UITableViewDataSource methods
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return memes.count
+        return self.memes.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cellID = "MemeTableViewCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MemeTableViewCell", for: indexPath)
         
         let meme = memes[(indexPath as NSIndexPath).row]
         
@@ -77,12 +76,10 @@ class MemeTableViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // Get the Storyboard and MemeDetailViewControlled
-        let storyboard = UIStoryboard (name: "Main", bundle: nil)
-        let memeDetailVC = storyboard.instantiateViewController(withIdentifier: "MemeDetailViewController") as! MemeDetailViewController
+        // Instantiate and initialize MemeDetailViewController
+        let detailController = self.storyboard!.instantiateViewController(withIdentifier: "MemeDetailViewController") as! MemeDetailViewController
+        detailController.meme = memes[(indexPath as NSIndexPath).row]
         
-        memeDetailVC.memeImage = memes[(indexPath as NSIndexPath).row].memed
-        
-        self.navigationController?.pushViewController(memeDetailVC, animated: true)
+        self.navigationController?.pushViewController(detailController, animated: true)
     }
 }
