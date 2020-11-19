@@ -31,8 +31,8 @@ class MemeCollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let space: CGFloat = 3.0
-        let shortEdgeLen = (self.view.frame.size.width < self.view.frame.size.height) ? self.view.frame.size.width : self.view.frame.size.height // short edge length of display -- depending on orientation
+        let space: CGFloat = 2.0
+        let shortEdgeLen = (self.view.frame.size.width < self.view.frame.size.height) ? self.view.frame.size.width : self.view.frame.size.height // short edge of display -- depending on orientation
         let dimension = (shortEdgeLen - (2 * space)) / 3.0
 
         if let flowLayout = self.flowLayout {
@@ -44,7 +44,7 @@ class MemeCollectionViewController: UICollectionViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         self.collectionView.reloadData()
     }
     
@@ -56,8 +56,10 @@ class MemeCollectionViewController: UICollectionViewController {
         let storyboard = UIStoryboard (name: "Main", bundle: nil)
         let memeEditorVC = storyboard.instantiateViewController(withIdentifier: "MemeEditorViewController") as! MemeEditorViewController
         
-        memeEditorVC.completionHandle = {
-            self.collectionView.reloadData()
+        memeEditorVC.completionHandle = { (updated) in
+            if updated {
+                self.collectionView.reloadData()
+            }
         }
         
         self.present(memeEditorVC, animated: true, completion: nil)

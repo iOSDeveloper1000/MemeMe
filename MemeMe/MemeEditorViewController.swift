@@ -41,17 +41,20 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         NSAttributedString.Key.strokeWidth: -6.0
     ]
     
-    var memedImage: UIImage!
+    // Flag and buffered values for editing memes
+    var isEdit: Bool = false
+    var oldMeme: Meme!
+    var tempMeme: UIImage!
     
-    // Set by instantiating view controller such that table / collection can be reloaded
-    var completionHandle: () -> Void = {}
+    // Function object set by calling view controller, run before dismissig meme editor
+    var completionHandle: (_ isMemeUpdated: Bool) -> Void = {(_) in }
     
     
     // MARK: Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.setTextFieldProperties(topTextField, defaultText: defaultTextTop)
         self.setTextFieldProperties(bottomTextField, defaultText: defaultTextBottom)
     }
@@ -61,6 +64,22 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         
         self.cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
         self.shareButton.isEnabled = false
+
+        // Editing an existing meme
+        if self.isEdit == true {
+            self.isEdit = false
+
+            // Load in old meme properties
+            self.imageView.image = self.oldMeme.original
+            self.topTextField.text = self.oldMeme.topText
+            self.bottomTextField.text = self.oldMeme.bottomText
+            
+            // Enable Share button (in case image is not changed)
+            self.shareButton.isEnabled = true
+            
+            // Align text fields again
+            self.alignTextFieldInImage(self.oldMeme.original)
+        }
         
         self.subscribeToKeyboardNotifications()
     }
@@ -94,24 +113,26 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     }
     
     @IBAction func shareMeme(_ sender: Any) {
+        self.tempMeme = self.generateMemedImage()
         
-        self.memedImage = self.generateMemedImage()
-        
-        let activityController = UIActivityViewController(activityItems: [self.memedImage!], applicationActivities: nil)
+        // Create activity controller for sharing the meme present in the editor
+        let activityController = UIActivityViewController(activityItems: [self.tempMeme!], applicationActivities: nil)
         
         activityController.completionWithItemsHandler = { (activityType, completed, returnedItems, error) in
             if !completed {
+                self.completionHandle(false)
                 return
             }
             
             self.save()
-            self.completionHandle()
+            self.completionHandle(true)
         }
         
         self.present(activityController, animated: true, completion: nil)
     }
     
     @IBAction func cancelEditor(_ sender: Any) {
+        self.completionHandle(false)
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -127,7 +148,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
             // Enable Share button
             self.shareButton.isEnabled = true
         } else {
-            print("image is nil")
+            print("image not existent")
         }
         
         picker.dismiss(animated: true, completion: nil)
@@ -196,21 +217,48 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
         
+        // Crop meme to the original image size
+        let frameSize = self.imageView.frame.size
+        let frameAspectRatio: CGFloat = frameSize.height / frameSize.width
+        
+        let imageSize = self.imageView.image?.size
+        let imageAspectRatio: CGFloat = imageSize!.height / imageSize!.width
+        
+        var cropRectangular: CGRect = self.imageView.frame
+        
+        do { // Compute CGRect for cropping
+            if imageAspectRatio > frameAspectRatio {
+                cropRectangular.size.height = frameSize.height
+                cropRectangular.size.width = 1.0 / imageAspectRatio * cropRectangular.size.height
+                
+                cropRectangular.origin.x = (frameSize.width - cropRectangular.size.width) / 2
+                cropRectangular.origin.y = 0
+            } else {
+                cropRectangular.size.width = frameSize.width
+                cropRectangular.size.height = imageAspectRatio * cropRectangular.size.width
+                
+                cropRectangular.origin.x = 0
+                cropRectangular.origin.y = (frameSize.height - cropRectangular.size.height) / 2
+            }
+        }
+
+        let imageRef = memedImage.cgImage!.cropping(to: cropRectangular)!
+        
         // Present toolbar and navigationbar again
         self.hideToolbarAndNavBar(false)
         
-        return memedImage
+        return UIImage(cgImage: imageRef, scale: memedImage.scale, orientation: memedImage.imageOrientation)
     }
     
     // Create a meme object and save it to the memes array in the app delegate
     func save() {
         
         // Update the meme
-        let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: self.imageView.image!, memedImage: self.memedImage!)
+        let newMeme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: self.imageView.image!, memedImage: self.tempMeme!)
         
         // Add it to the memes array in app delegate
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.memes.append(meme)
+        appDelegate.memes.append(newMeme)
     }
     
     func hideToolbarAndNavBar(_ hidden: Bool) {

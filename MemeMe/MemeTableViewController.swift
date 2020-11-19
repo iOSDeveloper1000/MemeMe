@@ -48,9 +48,11 @@ class MemeTableViewController: UIViewController, UITableViewDelegate, UITableVie
         let storyboard = UIStoryboard (name: "Main", bundle: nil)
         let memeEditorVC = storyboard.instantiateViewController(withIdentifier: "MemeEditorViewController") as! MemeEditorViewController
         
-        memeEditorVC.completionHandle = {
-            let tableView = self.view as! UITableView
-            tableView.reloadData()
+        memeEditorVC.completionHandle = { (updated) in
+            if updated {
+                let tableView = self.view as! UITableView
+                tableView.reloadData()
+            }
         }
         
         self.present(memeEditorVC, animated: true, completion: nil)
