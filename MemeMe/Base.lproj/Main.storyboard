@@ -96,7 +96,7 @@
                                 </constraints>
                                 <items>
                                     <navigationItem title="Meme Editor" id="2Db-nz-SjR">
-                                        <barButtonItem key="leftBarButtonItem" image="square.and.arrow.up" catalog="system" id="IgW-xa-KuY">
+                                        <barButtonItem key="leftBarButtonItem" enabled="NO" image="square.and.arrow.up" catalog="system" id="IgW-xa-KuY">
                                             <connections>
                                                 <action selector="shareMeme:" destination="BYZ-38-t0r" id="nV8-oN-tcm"/>
                                             </connections>

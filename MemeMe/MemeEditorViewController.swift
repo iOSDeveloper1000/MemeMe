@@ -65,7 +65,8 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         self.view.layoutSubviews()
         
         self.cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
-        self.shareButton.isEnabled = false
+        // Flag for shareButton now set in the respective storyboard item
+        //self.shareButton.isEnabled = false
 
         // Editing an existing meme
         if self.isEdit == true {
