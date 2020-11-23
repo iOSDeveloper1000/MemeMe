@@ -16,6 +16,7 @@ class MemeDetailViewController: UIViewController {
     // MARK: Properties
     
     var meme: Meme!
+    var indexInArray: Int!
     
     
     // MARK: Outlets
@@ -44,8 +45,15 @@ class MemeDetailViewController: UIViewController {
         
         memeEditorVC.completionHandle = { (updated) in
             if updated {
+                // Fetch new meme from app delegate
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 self.meme = appDelegate.memes[appDelegate.memes.count - 1]
+                
+                // Remove old meme from memes array after edit
+                appDelegate.memes.remove(at: self.indexInArray!)
+                self.indexInArray = appDelegate.memes.count - 1
+                
+                // Update Detail view controller
                 self.updateView()
             }
         }

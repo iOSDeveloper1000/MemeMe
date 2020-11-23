@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Meme Detail View Controller-->
+        <!--Meme Detail-->
         <scene sceneID="KZ2-LG-Zxr">
             <objects>
                 <viewController storyboardIdentifier="MemeDetailViewController" id="nQZ-Cd-qMA" customClass="MemeDetailViewController" customModule="MemeMe" customModuleProvider="target" sceneMemberID="viewController">
@@ -41,7 +41,7 @@
                             <constraint firstItem="6Rt-xL-W7d" firstAttribute="bottom" secondItem="Dse-Bz-tUn" secondAttribute="bottom" constant="10" id="zp7-zT-jW9"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="yqD-CZ-6aZ">
+                    <navigationItem key="navigationItem" title="Meme Detail" id="yqD-CZ-6aZ">
                         <barButtonItem key="rightBarButtonItem" title="Edit" id="Iai-LQ-aZL">
                             <connections>
                                 <action selector="editMeme:" destination="nQZ-Cd-qMA" id="abb-9P-2OG"/>
@@ -289,16 +289,12 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Sent Memes" id="J3B-UU-dFU">
-                        <barButtonItem key="leftBarButtonItem" title="Edit" id="IH5-IS-HXu"/>
                         <barButtonItem key="rightBarButtonItem" image="plus" catalog="system" id="Ehf-BS-E6n">
                             <connections>
                                 <action selector="addMeme:" destination="ei9-iD-Agy" id="wGu-jz-e1e"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
-                    <connections>
-                        <outlet property="editButton" destination="IH5-IS-HXu" id="9GP-yc-2Hh"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D37-Ua-qog" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

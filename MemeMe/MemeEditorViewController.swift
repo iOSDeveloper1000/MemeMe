@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import AVFoundation
 
 
 // MARK: Static elements
@@ -62,6 +61,9 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // Update layout of subviews, esp. imageView frame
+        self.view.layoutSubviews()
+        
         self.cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
         self.shareButton.isEnabled = false
 
@@ -78,7 +80,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
             self.shareButton.isEnabled = true
             
             // Align text fields again
-            self.alignTextFieldInImage(self.oldMeme.original)
+            self.alignTextFielsdInImage(self.oldMeme.original)
         }
         
         self.subscribeToKeyboardNotifications()
@@ -90,7 +92,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         // Adapt the text fields in case the device is rotated
         coordinator.animate(alongsideTransition: nil) { _ in
             if let image = self.imageView.image {
-                self.alignTextFieldInImage(image)
+                self.alignTextFielsdInImage(image)
             }
         }
     }
@@ -143,7 +145,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             self.imageView.image = image
-            self.alignTextFieldInImage(image)
+            self.alignTextFielsdInImage(image)
             
             // Enable Share button
             self.shareButton.isEnabled = true
@@ -191,19 +193,36 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         textfield.delegate = self
     }
     
-    func alignTextFieldInImage(_ myImage: UIImage) {
+    func alignTextFielsdInImage(_ myImage: UIImage) {
         
-        // Get the outline of the current image rectangular
-        let imageRectangular = AVMakeRect(aspectRatio: myImage.size, insideRect: self.imageView.bounds)
+        let imageSize = self.imageView.image?.size
+        let imageAspectRatio: CGFloat = imageSize!.height / imageSize!.width
+
+        let frameSize = self.imageView.frame.size
+        let frameAspectRatio: CGFloat = frameSize.height / frameSize.width
         
+        var verticalConstant: CGFloat = 5.0
+        var horizontalConstant: CGFloat = 8.0
+
+        /* Compute the size of the image as seen on display (not in image pixels!) and
+            update the constraint constants for the textfields */
+        if imageAspectRatio > frameAspectRatio {
+            let scaledImageWidth = 1.0 / imageAspectRatio * frameSize.height
+            horizontalConstant += 0.5 * (frameSize.width - scaledImageWidth)
+        } else {
+            let scaledImageHeight = imageAspectRatio * frameSize.width
+            verticalConstant += 0.5 * (frameSize.height - scaledImageHeight)
+        }
+
         // Adapt top and bottom textfield for the size of the chosen image
         for constraint in self.view.constraints {
             if constraint.identifier == "horizontalTextFieldConstraint" {
-                constraint.constant = 10.0 + 0.5 * (self.imageView.frame.size.width - imageRectangular.width)
+                constraint.constant = horizontalConstant
             } else if constraint.identifier == "verticalTextFieldConstraint" {
-                constraint.constant = 15.0 + 0.5 * (self.imageView.frame.size.height - imageRectangular.height)
+                constraint.constant = verticalConstant
             }
         }
+        self.view.setNeedsUpdateConstraints()
     }
     
     func generateMemedImage() -> UIImage {

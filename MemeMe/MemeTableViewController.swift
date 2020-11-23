@@ -13,25 +13,15 @@ import UIKit
 
 class MemeTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    // MARK: Outlets
-    
-    @IBOutlet weak var editButton: UIBarButtonItem!
-    
-    
     // MARK: Properties
     
     var memes: [Meme]! {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        return appDelegate.memes
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            return appDelegate.memes
     }
     
     
     // MARK: Life cycle methods
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -80,8 +70,32 @@ class MemeTableViewController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // Instantiate and initialize MemeDetailViewController
         let detailController = self.storyboard!.instantiateViewController(withIdentifier: "MemeDetailViewController") as! MemeDetailViewController
-        detailController.meme = memes[(indexPath as NSIndexPath).row]
+        let row = (indexPath as NSIndexPath).row
+        detailController.meme = memes[row]
+        detailController.indexInArray = row
         
         self.navigationController?.pushViewController(detailController, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            self.deleteEntryFromMemesArray(index: indexPath)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
+    
+    
+    // MARK: Helper methods
+    
+    func deleteEntryFromMemesArray(index indexPath: IndexPath) {
+
+        let index = (indexPath as NSIndexPath).row
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        
+        if index < appDelegate.memes.count {
+            appDelegate.memes.remove(at: index)
+        } else {
+            print("Trying to delete non-existing entry")
+        }
     }
 }
